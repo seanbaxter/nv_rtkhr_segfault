@@ -30,6 +30,64 @@ Linux Mint 20 / Ubuntu 20.04.
 
 Slot in the included main.cpp into the nvpro samples framework to build.
 
+## Update
+
+I was able to segfault with the smallest possible pipeline that uses `OpTraceRayKHR`. See tiny.spv.
+
+```
+               OpCapability Shader
+               OpCapability RayTracingKHR
+               OpExtension "GL_EXT_scalar_block_layout"
+               OpExtension "SPV_KHR_ray_tracing"
+               OpMemoryModel Logical GLSL450
+               OpEntryPoint RayGenerationNV %_Z11rgen_shaderv "_Z11rgen_shaderv" %shader_tlas
+               OpEntryPoint MissNV %_Z12rmiss_shaderv "_Z12rmiss_shaderv"
+               OpEntryPoint ClosestHitNV %_Z12rchit_shaderI11material0_tEvv "_Z12rchit_shaderI11material0_tEvv"
+               OpName %shader_tlas "shader_tlas"
+               OpName %bb_entry "bb-entry"
+               OpName %_Z11rgen_shaderv "_Z11rgen_shaderv"
+               OpName %bb_entry_0 "bb-entry"
+               OpName %_Z12rmiss_shaderv "_Z12rmiss_shaderv"
+               OpName %bb_entry_1 "bb-entry"
+               OpName %_Z12rchit_shaderI11material0_tEvv "_Z12rchit_shaderI11material0_tEvv"
+               OpDecorate %shader_tlas Binding 1
+               OpDecorate %shader_tlas DescriptorSet 0
+          %2 = OpTypeAccelerationStructureKHR
+%_ptr_UniformConstant_2 = OpTypePointer UniformConstant %2
+%shader_tlas = OpVariable %_ptr_UniformConstant_2 UniformConstant
+       %void = OpTypeVoid
+          %8 = OpTypeFunction %void
+       %uint = OpTypeInt 32 0
+     %uint_1 = OpConstant %uint 1
+   %uint_255 = OpConstant %uint 255
+     %uint_0 = OpConstant %uint 0
+      %float = OpTypeFloat 32
+    %v3float = OpTypeVector %float 3
+    %float_0 = OpConstant %float 0
+         %18 = OpConstantComposite %v3float %float_0 %float_0 %float_0
+    %float_1 = OpConstant %float 1
+         %20 = OpConstantComposite %v3float %float_1 %float_0 %float_0
+%float_10000 = OpConstant %float 10000
+        %int = OpTypeInt 32 1
+      %int_0 = OpConstant %int 0
+%_Z11rgen_shaderv = OpFunction %void None %8
+   %bb_entry = OpLabel
+         %10 = OpLoad %2 %shader_tlas
+               OpTraceRayKHR %10 %uint_1 %uint_255 %uint_0 %uint_0 %uint_0 %18 %float_0 %20 %float_10000 %int_0
+               OpReturn
+               OpFunctionEnd
+%_Z12rmiss_shaderv = OpFunction %void None %8
+ %bb_entry_0 = OpLabel
+               OpReturn
+               OpFunctionEnd
+%_Z12rchit_shaderI11material0_tEvv = OpFunction %void None %8
+ %bb_entry_1 = OpLabel
+               OpReturn
+               OpFunctionEnd
+```
+
+## Validator output
+
 I'm running with the Vulkan validation layers and they don't flag anything. Here is the full output:
 
 ```_______________
